@@ -1,36 +1,36 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const path = require('path');
-const multer = require('multer');
-const mysql = require('mysql2');
-const fs = require('fs');
-const nunjucks = require('nunjucks');
+const path = require("path");
+const multer = require("multer");
+const mysql = require("mysql2");
+const fs = require("fs");
+const nunjucks = require("nunjucks");
 
-nunjucks.configure('chart', {
+nunjucks.configure("chart", {
   autoescape: true,
   express: app,
 });
 
 // MySQL connection 설정
 const connection = mysql.createConnection({
-  host: '127.0.0.1',
-  user: 'root',
-  password: '비밀번호',
-  database: '디비이름',
+  host: "127.0.0.1",
+  user: "root",
+  password: "비밀번호",
+  database: "디비이름",
 });
 
 //uploads 폴더 생성
 try {
-  fs.readdirSync('uploads');
+  fs.readdirSync("uploads");
 } catch (error) {
-  console.error('uploads 폴더가 없어 uploads 폴더를 생성합니다.');
-  fs.mkdirSync('uploads');
+  console.error("uploads 폴더가 없어 uploads 폴더를 생성합니다.");
+  fs.mkdirSync("uploads");
 }
 
 // 파일 업로드를위한 multer 설정
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/');
+    cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname);
@@ -68,42 +68,42 @@ const coretask_result = Array.from(
 ); //task별, core별로 최대, 최소, 평균, 표준편차, 중앙값 계산
 
 // 업로드 페이지를 렌더링하는 라우터
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'upload.html'));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "upload.html"));
 });
 
 // 서버 시작
 app.listen(3000, () => {
-  console.log('서버가 시작되었습니다.');
+  console.log("서버가 시작되었습니다.");
 });
 
 //서버 종료와 함께 db연결 종료
-process.on('SIGINT', () => {
-  console.log('서버가 종료됩니다.');
+process.on("SIGINT", () => {
+  console.log("서버가 종료됩니다.");
   connection.end();
   process.exit();
 });
 
 // 업로드된 파일을 처리하는 라우터 파일로 들어온 데이터 가공하고 DB에 저장
-app.post('/upload', upload.single('userfile'), (req, res) => {
+app.post("/upload", upload.single("userfile"), (req, res) => {
   // 새로운 파일을 위해 기존 기록 제거
-  connection.query('DELETE FROM table_name');
+  connection.query("DELETE FROM table_name");
 
   // 파일이 위치한 디렉토리 경로
-  const directoryPath = 'uploads/';
+  const directoryPath = "uploads/";
 
   // 파일 이름 목록 읽기
   const files = fs.readdirSync(directoryPath);
   const fileName = files[0];
 
-  const fileContent = fs.readFileSync(directoryPath + fileName, 'utf-8');
+  const fileContent = fs.readFileSync(directoryPath + fileName, "utf-8");
 
   // 숫자 값만 받아오는 코드
   const frows = fileContent.match(/\d+/g);
 
   // core1 <-에 붙은 숫자 제거
   const rows = frows.filter(
-    (value) => !['1', '2', '3', '4', '5'].includes(value)
+    (value) => !["1", "2", "3", "4", "5"].includes(value)
   );
 
   // rows를 2차원 배열로 변환
@@ -117,12 +117,12 @@ app.post('/upload', upload.single('userfile'), (req, res) => {
   //사용한 파일 다시 제거
   fs.unlink(directoryPath + fileName, (err) => {
     if (err) throw err;
-    console.log('File is deleted.');
+    console.log("File is deleted.");
   });
 
   // 삽입 쿼리 생성
   connection.query(
-    'INSERT INTO table_name (task1, task2, task3, task4, task5) VALUES ?',
+    "INSERT INTO table_name (task1, task2, task3, task4, task5) VALUES ?",
     [data],
     (err) => {
       if (err) throw err;
@@ -132,7 +132,7 @@ app.post('/upload', upload.single('userfile'), (req, res) => {
 
   // 데이터베이스에서 데이터 가져오기
   connection.query(
-    'SELECT task1, task2, task3, task4, task5 FROM table_name',
+    "SELECT task1, task2, task3, task4, task5 FROM table_name",
     (error, results, fields) => {
       if (error) throw error;
 
@@ -205,7 +205,7 @@ app.post('/upload', upload.single('userfile'), (req, res) => {
       console.log(coretask_value); // taskN에 속한 coreN의 값의 집합 출력
       console.log(coretask_result); //task별, core별로 최대, 최소, 평균, 표준편차, 중앙값 계산한 배열 출력
 
-      res.render('main.html', { coretask_result });
+      res.render("main.html", { coretask_result });
     }
   );
 });
