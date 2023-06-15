@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Chart.js Example</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="chartData.js"></script>
+  </head>
+
+  <body>
+    <h1>
+      <div id="display"></div>
+    </h1>
+
+    <div>
+      <p>
+        <b>작업단위</b>
+      </p>
+      <button id="task1" onclick="showNumber('task1의 core별 수행능력')">
+        task 1
+      </button>
+      <button id="task2" onclick="showNumber('task2의 core별 수행능력')">
+        task 2
+      </button>
+      <button id="task3" onclick="showNumber('task3의 core별 수행능력')">
+        task 3
+      </button>
+      <button id="task4" onclick="showNumber('task4의 core별 수행능력')">
+        task 4
+      </button>
+      <button id="task5" onclick="showNumber('task5의 core별 수행능력')">
+        task 5
+      </button>
+      <p>
+        <b>코어단위</b>
+      </p>
+      <button id="core1" onclick="showNumber('core1의 task별 수행능력')">
+        core 1
+      </button>
+      <button id="core2" onclick="showNumber('core2의 task별 수행능력')">
+        core 2
+      </button>
+      <button id="core3" onclick="showNumber('core3의 task별 수행능력')">
+        core 3
+      </button>
+      <button id="core4" onclick="showNumber('core4의 task별 수행능력')">
+        core 4
+      </button>
+      <button id="core5" onclick="showNumber('core5의 task별 수행능력')">
+        core 5
+      </button>
+    </div>
+
+    <!-- 차트 -->
+    <div>
+      <canvas id="chart" width="1000vw" height="500vw"></canvas>
+    </div>
+    <br /><br />
+
+    <!-- 차트 모양 변경 버튼 -->
+    <div>
+      <button id="task1_bar">Bar</button>
+      <button id="task1_radar">Radar</button>
+    </div>
+    <div>
+      <button id="task2_bar">Bar</button>
+      <button id="task2_radar">Radar</button>
+    </div>
+    <div>
+      <button id="task3_bar">Bar</button>
+      <button id="task3_radar">Radar</button>
+    </div>
+    <div>
+      <button id="task4_bar">Bar</button>
+      <button id="task4_radar">Radar</button>
+    </div>
+    <div>
+      <button id="task5_bar">Bar</button>
+      <button id="task5_radar">Radar</button>
+    </div>
+    <div>
+      <button id="core1_bar">Bar</button>
+      <button id="core1_radar">Radar</button>
+    </div>
+    <div>
+      <button id="core2_bar">Bar</button>
+      <button id="core2_radar">Radar</button>
+    </div>
+    <div>
+      <button id="core3_bar">Bar</button>
+      <button id="core3_radar">Radar</button>
+    </div>
+    <div>
+      <button id="core4_bar">Bar</button>
+      <button id="core4_radar">Radar</button>
+    </div>
+    <div>
+      <button id="core5_bar">Bar</button>
+      <button id="core5_radar">Radar</button>
+    </div>
+
+    <!-- 버튼 누를 때 위 버튼 onclick 값에 적용할 함수 -->
+    <script>
+      function showNumber(name) {
+        var displayElement = document.getElementById("display"); //display의 div문장의 값에
+        displayElement.innerHTML = name; //showNumber로 들어온 인자 name의 값으로 수정 후 출력
+      }
+    </script>
+
+    <!-- 차트 모양 변경 버튼 보이기/숨기기 -->
+    <script>
+      // 버튼 숨기기
+      function hideButton(buttonId) {
+        var button = document.getElementById(buttonId);
+        button.style.display = "none";
+      }
+      // 버튼 보이기
+      function showButton(buttonId) {
+        var button = document.getElementById(buttonId);
+        button.style.display = "inline-block";
+      }
+    </script>
+
+    <!-- 그래프 데이터 -->
+    <script>
+      $(document).ready(function () {
+        // task1, task2, ... , task5별 그래프 데이터
+        // -----------------------------------------------
+        var chartData1 = {
+          labels: ["core1", "core2", "core3", "core4", "core5"],
+          datasets: [
+            {
+              label: "Max",
+              data: [
+                "{{coretask_result[0][0][0]}}",
+                "{{coretask_result[1][0][0]}}",
+                "{{coretask_result[2][0][0]}}",
+                "{{coretask_result[3][0][0]}}",
+                "{{coretask_result[4][0][0]}}",
+              ],
+              fill: false,
+              borderColor: "red",
+              backgroundColor: "red",
+              tension: 0.1,
+            },
+            {
+              label: "Min",
+              data: [
+                "{{coretask_result[0][0][1]}}",
+                "{{coretask_result[1][0][1]}}",
+                "{{coretask_result[2][0][1]}}",
+                "{{coretask_result[3][0][1]}}",
+                "{{coretask_result[4][0][1]}}",
+              ],
+              fill: false,
+              borderColor: "blue",
+              backgroundColor: "blue",
+              tension: 0.1,
+            },
+            {
+              label: "Avg",
+              data: [
+                "{{coretask_result[0][0][2]}}",
+                "{{coretask_result[1][0][2]}}",
+                "{{coretask_result[2][0][2]}}",
+                "{{coretask_result[3][0][2]}}",
+                "{{coretask_result[4][0][2]}}",
+              ],
+              fill: false,
+              borderColor: "green",
+              backgroundColor: "green",
+              tension: 0.1,
+            },
+            {
+              label: "Standard",
+              data: [
+                "{{coretask_result[0][0][3]}}",
+                "{{coretask_result[1][0][3]}}",
+                "{{coretask_result[2][0][3]}}",
+                "{{coretask_result[3][0][3]}}",
+                "{{coretask_result[4][0][3]}}",
+              ],
+              fill: false,
+              borderColor: "orange",
+              backgroundColor: "orange",
+              tension: 0.1,
+            },
+            {
+              label: "Median",
+              data: [
+                "{{coretask_result[0][0][4]}}",
+                "{{coretask_result[1][0][4]}}",
+                "{{coretask_result[2][0][4]}}",
+                "{{coretask_result[3][0][4]}}",
+                "{{coretask_result[4][0][4]}}",
+              ],
+              fill: false,
+              borderColor: "purple",
+              backgroundColor: "purple",
+              tension: 0.1,
+            },
+          ],
+        };
+
+        var chartData2 = {
+          labels: ["core1", "core2", "core3", "core4", "core5"],
+          datasets: [
+            {
+              label: "Max",
+              data: [
+                "{{coretask_result[0][1][0]}}",
+                "{{coretask_result[1][1][0]}}",
+                "{{coretask_result[2][1][0]}}",
+                "{{coretask_result[3][1][0]}}",
+                "{{coretask_result[4][1][0]}}",
+              ],
+              fill: false,
+              borderColor: "red",
+              backgroundColor: "red",
+              tension: 0.1,
+            },
+            {
+              label: "Min",
+              data: [
+                "{{coretask_result[0][1][1]}}",
+                "{{coretask_result[1][1][1]}}",
+                "{{coretask_result[2][1][1]}}",
+                "{{coretask_result[3][1][1]}}",
+                "{{coretask_result[4][1][1]}}",
+              ],
+              fill: false,
+              borderColor: "blue",
+              backgroundColor: "blue",
+              tension: 0.1,
+            },
+            {
+              label: "Avg",
+              data: [
+                "{{coretask_result[0][1][2]}}",
+                "{{coretask_result[1][1][2]}}",
+                "{{coretask_result[2][1][2]}}",
+                "{{coretask_result[3][1][2]}}",
+                "{{coretask_result[4][1][2]}}",
+              ],
+              fill: false,
+              borderColor: "green",
+              backgroundColor: "green",
+              tension: 0.1,
+            },
+            {
+              label: "Standard",
+              data: [
+                "{{coretask_result[0][1][3]}}",
+                "{{coretask_result[1][1][3]}}",
+                "{{coretask_result[2][1][3]}}",
+                "{{coretask_result[3][1][3]}}",
+                "{{coretask_result[4][1][3]}}",
+              ],
+              fill: false,
+              borderColor: "orange",
+              backgroundColor: "orange",
+              tension: 0.1,
+            },
+            {
+              label: "Median",
+              data: [
+                "{{coretask_result[0][1][4]}}",
+                "{{coretask_result[1][1][4]}}",
+                "{{coretask_result[2][1][4]}}",
+                "{{coretask_result[3][1][4]}}",
+                "{{coretask_result[4][1][4]}}",
+              ],
+              fill: false,
+              borderColor: "purple",
+              backgroundColor: "purple",
+              tension: 0.1,
+            },
+          ],
+        };
+
+        var chartData3 = {
+          labels: ["core1", "core2", "core3", "core4", "core5"],
+          datasets: [
+            {
+              label: "Max",
+              data: [
+                "{{coretask_result[0][2][0]}}",
+                "{{coretask_result[1][2][0]}}",
+                "{{coretask_result[2][2][0]}}",
+                "{{coretask_result[3][2][0]}}",
+                "{{coretask_result[4][2][0]}}",
+              ],
+              fill: false,
+              borderColor: "red",
+              backgroundColor: "red",
+              tension: 0.1,
+            },
+            {
+              label: "Min",
+              data: [
+                "{{coretask_result[0][2][1]}}",
+                "{{coretask_result[1][2][1]}}",
+                "{{coretask_result[2][2][1]}}",
+                "{{coretask_result[3][2][1]}}",
+                "{{coretask_result[4][2][1]}}",
+              ],
+              fill: false,
+              borderColor: "blue",
+              backgroundColor: "blue",
+              tension: 0.1,
+            },
+            {
+              label: "Avg",
+              data: [
+                "{{coretask_result[0][2][2]}}",
+                "{{coretask_result[1][2][2]}}",
+                "{{coretask_result[2][2][2]}}",
+                "{{coretask_result[3][2][2]}}",
+                "{{coretask_result[4][2][2]}}",
+              ],
+              fill: false,
+              borderColor: "green",
+              backgroundColor: "green",
+              tension: 0.1,
+            },
+            {
+              label: "Standard",
+              data: [
+                "{{coretask_result[0][2][3]}}",
+                "{{coretask_result[1][2][3]}}",
+                "{{coretask_result[2][2][3]}}",
+                "{{coretask_result[3][2][3]}}",
+                "{{coretask_result[4][2][3]}}",
+              ],
+              fill: false,
+              borderColor: "orange",
+              backgroundColor: "orange",
+              tension: 0.1,
+            },
+            {
+              label: "Median",
+              data: [
+                "{{coretask_result[0][2][4]}}",
+                "{{coretask_result[1][2][4]}}",
+                "{{coretask_result[2][2][4]}}",
+                "{{coretask_result[3][2][4]}}",
+                "{{coretask_result[4][2][4]}}",
+              ],
+              fill: false,
+              borderColor: "purple",
+              backgroundColor: "purple",
+              tension: 0.1,
+            },
+          ],
+        };
+
+        var chartData4 = {
+          labels: ["core1", "core2", "core3", "core4", "core5"],
+          datasets: [
+            {
+              label: "Max",
+              data: [
+                "{{coretask_result[0][3][0]}}",
+                "{{coretask_result[1][3][0]}}",
+                "{{coretask_result[2][3][0]}}",
+                "{{coretask_result[3][3][0]}}",
+                "{{coretask_result[4][3][0]}}",
+              ],
+              fill: false,
+              borderColor: "red",
+              backgroundColor: "red",
+              tension: 0.1,
+            },
+            {
+              label: "Min",
+              data: [
+                "{{coretask_result[0][3][1]}}",
+                "{{coretask_result[1][3][1]}}",
+                "{{coretask_result[2][3][1]}}",
+                "{{coretask_result[3][3][1]}}",
+                "{{coretask_result[4][3][1]}}",
+              ],
+              fill: false,
+              borderColor: "blue",
+              backgroundColor: "blue",
+              tension: 0.1,
+            },
+            {
+              label: "Avg",
+              data: [
+                "{{coretask_result[0][3][2]}}",
+                "{{coretask_result[1][3][2]}}",
+                "{{coretask_result[2][3][2]}}",
+                "{{coretask_result[3][3][2]}}",
+                "{{coretask_result[4][3][2]}}",
+              ],
+              fill: false,
+              borderColor: "green",
+              backgroundColor: "green",
+              tension: 0.1,
+            },
+            {
+              label: "Standard",
+              data: [
+                "{{coretask_result[0][3][3]}}",
+                "{{coretask_result[1][3][3]}}",
+                "{{coretask_result[2][3][3]}}",
+                "{{coretask_result[3][3][3]}}",
+                "{{coretask_result[4][3][3]}}",
+              ],
+              fill: false,
+              borderColor: "orange",
+              backgroundColor: "orange",
+              tension: 0.1,
+            },
+            {
+              label: "Median",
+              data: [
+                "{{coretask_result[0][3][4]}}",
+                "{{coretask_result[1][3][4]}}",
+                "{{coretask_result[2][3][4]}}",
+                "{{coretask_result[3][3][4]}}",
+                "{{coretask_result[4][3][4]}}",
+              ],
+              fill: false,
+              borderColor: "purple",
+              backgroundColor: "purple",
+              tension: 0.1,
+            },
+          ],
+        };
+
+        var chartData5 = {
+          labels: ["core1", "core2", "core3", "core4", "core5"],
+          datasets: [
+            {
+              label: "Max",
+              data: [
+                "{{coretask_result[0][4][0]}}",
+                "{{coretask_result[1][4][0]}}",
+                "{{coretask_result[2][4][0]}}",
+                "{{coretask_result[3][4][0]}}",
+                "{{coretask_result[4][4][0]}}",
+              ],
+              fill: false,
+              borderColor: "red",
+              backgroundColor: "red",
+              tension: 0.1,
+            },
+            {
+              label: "Min",
+              data: [
+                "{{coretask_result[0][4][1]}}",
+                "{{coretask_result[1][4][1]}}",
+                "{{coretask_result[2][4][1]}}",
+                "{{coretask_result[3][4][1]}}",
+                "{{coretask_result[4][4][1]}}",
+              ],
+              fill: false,
+              borderColor: "blue",
+              backgroundColor: "blue",
+              tension: 0.1,
+            },
+            {
+              label: "Avg",
+              data: [
+                "{{coretask_result[0][4][2]}}",
+                "{{coretask_result[1][4][2]}}",
+                "{{coretask_result[2][4][2]}}",
+                "{{coretask_result[3][4][2]}}",
+                "{{coretask_result[4][4][2]}}",
+              ],
+              fill: false,
+              borderColor: "green",
+              backgroundColor: "green",
+              tension: 0.1,
+            },
+            {
+              label: "Standard",
+              data: [
+                "{{coretask_result[0][4][3]}}",
+                "{{coretask_result[1][4][3]}}",
+                "{{coretask_result[2][4][3]}}",
+                "{{coretask_result[3][4][3]}}",
+                "{{coretask_result[4][4][3]}}",
+              ],
+              fill: false,
+              borderColor: "orange",
+              backgroundColor: "orange",
+              tension: 0.1,
+            },
+            {
+              label: "Median",
+              data: [
+                "{{coretask_result[0][4][4]}}",
+                "{{coretask_result[1][4][4]}}",
+                "{{coretask_result[2][4][4]}}",
+                "{{coretask_result[3][4][4]}}",
+                "{{coretask_result[4][4][4]}}",
+              ],
+              fill: false,
+              borderColor: "purple",
+              backgroundColor: "purple",
+              tension: 0.1,
+            },
+          ],
+        };
+
+        // core1, core2, ... ,core5별 그래프
+        // 데이터--------------------------------------------------------
+        var chartData6 = {
+          labels: ["task1", "task2", "task3", "task4", "task5"],
+          datasets: [
+            {
+              label: "Max",
+              data: [
+                "{{coretask_result[0][0][0]}}",
+                "{{coretask_result[0][1][0]}}",
+                "{{coretask_result[0][2][0]}}",
+                "{{coretask_result[0][3][0]}}",
+                "{{coretask_result[0][4][0]}}",
+              ],
+              fill: false,
+              borderColor: "red",
+              backgroundColor: "red",
+              tension: 0.1,
+            },
+            {
+              label: "Min",
+              data: [
+                "{{coretask_result[0][0][1]}}",
+                "{{coretask_result[0][1][1]}}",
+                "{{coretask_result[0][2][1]}}",
+                "{{coretask_result[0][3][1]}}",
+                "{{coretask_result[0][4][1]}}",
+              ],
+              fill: false,
+              borderColor: "blue",
+              backgroundColor: "blue",
+              tension: 0.1,
+            },
+            {
+              label: "Avg",
+              data: [
+                "{{coretask_result[0][0][2]}}",
+                "{{coretask_result[0][1][2]}}",
+                "{{coretask_result[0][2][2]}}",
+                "{{coretask_result[0][3][2]}}",
+                "{{coretask_result[0][4][2]}}",
+              ],
+              fill: false,
+              borderColor: "green",
+              backgroundColor: "green",
+              tension: 0.1,
+            },
+            {
+              label: "Standard",
+              data: [
+                "{{coretask_result[0][0][3]}}",
+                "{{coretask_result[0][1][3]}}",
+                "{{coretask_result[0][2][3]}}",
+                "{{coretask_result[0][3][3]}}",
+                "{{coretask_result[0][4][3]}}",
+              ],
+              fill: false,
+              borderColor: "orange",
+              backgroundColor: "orange",
+              tension: 0.1,
+            },
+            {
+              label: "Median",
+              data: [
+                "{{coretask_result[0][0][4]}}",
+                "{{coretask_result[0][1][4]}}",
+                "{{coretask_result[0][2][4]}}",
+                "{{coretask_result[0][3][4]}}",
+                "{{coretask_result[0][4][4]}}",
+              ],
+              fill: false,
+              borderColor: "purple",
+              backgroundColor: "purple",
+              tension: 0.1,
+            },
+          ],
+        };
+
+        var chartData7 = {
+          labels: ["task1", "task2", "task3", "task4", "task5"],
+          datasets: [
+            {
+              label: "Max",
+              data: [
+                "{{coretask_result[1][0][0]}}",
+                "{{coretask_result[1][1][0]}}",
+                "{{coretask_result[1][2][0]}}",
+                "{{coretask_result[1][3][0]}}",
+                "{{coretask_result[1][4][0]}}",
+              ],
+              fill: false,
+              borderColor: "red",
+              backgroundColor: "red",
+              tension: 0.1,
+            },
+            {
+              label: "Min",
+              data: [
+                "{{coretask_result[1][0][1]}}",
+                "{{coretask_result[1][1][1]}}",
+                "{{coretask_result[1][2][1]}}",
+                "{{coretask_result[1][3][1]}}",
+                "{{coretask_result[1][4][1]}}",
+              ],
+              fill: false,
+              borderColor: "blue",
+              backgroundColor: "blue",
+              tension: 0.1,
+            },
+            {
+              label: "Avg",
+              data: [
+                "{{coretask_result[1][0][2]}}",
+                "{{coretask_result[1][1][2]}}",
+                "{{coretask_result[1][2][2]}}",
+                "{{coretask_result[1][3][2]}}",
+                "{{coretask_result[1][4][2]}}",
+              ],
+              fill: false,
+              borderColor: "green",
+              backgroundColor: "green",
+              tension: 0.1,
+            },
+            {
+              label: "Standard",
+              data: [
+                "{{coretask_result[1][0][3]}}",
+                "{{coretask_result[1][1][3]}}",
+                "{{coretask_result[1][2][3]}}",
+                "{{coretask_result[1][3][3]}}",
+                "{{coretask_result[1][4][3]}}",
+              ],
+              fill: false,
+              borderColor: "orange",
+              backgroundColor: "orange",
+              tension: 0.1,
+            },
+            {
+              label: "Median",
+              data: [
+                "{{coretask_result[1][0][4]}}",
+                "{{coretask_result[1][1][4]}}",
+                "{{coretask_result[1][2][4]}}",
+                "{{coretask_result[1][3][4]}}",
+                "{{coretask_result[1][4][4]}}",
+              ],
+              fill: false,
+              borderColor: "purple",
+              backgroundColor: "purple",
+              tension: 0.1,
+            },
+          ],
+        };
+
+        var chartData8 = {
+          labels: ["task1", "task2", "task3", "task4", "task5"],
+          datasets: [
+            {
+              label: "Max",
+              data: [
+                "{{coretask_result[2][0][0]}}",
+                "{{coretask_result[2][1][0]}}",
+                "{{coretask_result[2][2][0]}}",
+                "{{coretask_result[2][3][0]}}",
+                "{{coretask_result[2][4][0]}}",
+              ],
+              fill: false,
+              borderColor: "red",
+              backgroundColor: "red",
+              tension: 0.1,
+            },
+            {
+              label: "Min",
+              data: [
+                "{{coretask_result[2][0][1]}}",
+                "{{coretask_result[2][1][1]}}",
+                "{{coretask_result[2][2][1]}}",
+                "{{coretask_result[2][3][1]}}",
+                "{{coretask_result[2][4][1]}}",
+              ],
+              fill: false,
+              borderColor: "blue",
+              backgroundColor: "blue",
+              tension: 0.1,
+            },
+            {
+              label: "Avg",
+              data: [
+                "{{coretask_result[2][0][2]}}",
+                "{{coretask_result[2][1][2]}}",
+                "{{coretask_result[2][2][2]}}",
+                "{{coretask_result[2][3][2]}}",
+                "{{coretask_result[2][4][2]}}",
+              ],
+              fill: false,
+              borderColor: "green",
+              backgroundColor: "green",
+              tension: 0.1,
+            },
+            {
+              label: "Standard",
+              data: [
+                "{{coretask_result[2][0][3]}}",
+                "{{coretask_result[2][1][3]}}",
+                "{{coretask_result[2][2][3]}}",
+                "{{coretask_result[2][3][3]}}",
+                "{{coretask_result[2][4][3]}}",
+              ],
+              fill: false,
+              borderColor: "orange",
+              backgroundColor: "orange",
+              tension: 0.1,
+            },
+            {
+              label: "Median",
+              data: [
+                "{{coretask_result[2][0][4]}}",
+                "{{coretask_result[2][1][4]}}",
+                "{{coretask_result[2][2][4]}}",
+                "{{coretask_result[2][3][4]}}",
+                "{{coretask_result[2][4][4]}}",
+              ],
+              fill: false,
+              borderColor: "purple",
+              backgroundColor: "purple",
+              tension: 0.1,
+            },
+          ],
+        };
+
+        var chartData9 = {
+          labels: ["task1", "task2", "task3", "task4", "task5"],
+          datasets: [
+            {
+              label: "Max",
+              data: [
+                "{{coretask_result[3][0][0]}}",
+                "{{coretask_result[3][1][0]}}",
+                "{{coretask_result[3][2][0]}}",
+                "{{coretask_result[3][3][0]}}",
+                "{{coretask_result[3][4][0]}}",
+              ],
+              fill: false,
+              borderColor: "red",
+              backgroundColor: "red",
+              tension: 0.1,
+            },
+            {
+              label: "Min",
+              data: [
+                "{{coretask_result[3][0][1]}}",
+                "{{coretask_result[3][1][1]}}",
+                "{{coretask_result[3][2][1]}}",
+                "{{coretask_result[3][3][1]}}",
+                "{{coretask_result[3][4][1]}}",
+              ],
+              fill: false,
+              borderColor: "blue",
+              backgroundColor: "blue",
+              tension: 0.1,
+            },
+            {
+              label: "Avg",
+              data: [
+                "{{coretask_result[3][0][2]}}",
+                "{{coretask_result[3][1][2]}}",
+                "{{coretask_result[3][2][2]}}",
+                "{{coretask_result[3][3][2]}}",
+                "{{coretask_result[3][4][2]}}",
+              ],
+              fill: false,
+              borderColor: "green",
+              backgroundColor: "green",
+              tension: 0.1,
+            },
+            {
+              label: "Standard",
+              data: [
+                "{{coretask_result[3][0][3]}}",
+                "{{coretask_result[3][1][3]}}",
+                "{{coretask_result[3][2][3]}}",
+                "{{coretask_result[3][3][3]}}",
+                "{{coretask_result[3][4][3]}}",
+              ],
+              fill: false,
+              borderColor: "orange",
+              backgroundColor: "orange",
+              tension: 0.1,
+            },
+            {
+              label: "Median",
+              data: [
+                "{{coretask_result[3][0][4]}}",
+                "{{coretask_result[3][1][4]}}",
+                "{{coretask_result[3][2][4]}}",
+                "{{coretask_result[3][3][4]}}",
+                "{{coretask_result[3][4][4]}}",
+              ],
+              fill: false,
+              borderColor: "purple",
+              backgroundColor: "purple",
+              tension: 0.1,
+            },
+          ],
+        };
+
+        var chartData10 = {
+          labels: ["task1", "task2", "task3", "task4", "task5"],
+          datasets: [
+            {
+              label: "Max",
+              data: [
+                "{{coretask_result[4][0][0]}}",
+                "{{coretask_result[4][1][0]}}",
+                "{{coretask_result[4][2][0]}}",
+                "{{coretask_result[4][3][0]}}",
+                "{{coretask_result[4][4][0]}}",
+              ],
+              fill: false,
+              borderColor: "red",
+              backgroundColor: "red",
+              tension: 0.1,
+            },
+            {
+              label: "Min",
+              data: [
+                "{{coretask_result[4][0][1]}}",
+                "{{coretask_result[4][1][1]}}",
+                "{{coretask_result[4][2][1]}}",
+                "{{coretask_result[4][3][1]}}",
+                "{{coretask_result[4][4][1]}}",
+              ],
+              fill: false,
+              borderColor: "blue",
+              backgroundColor: "blue",
+              tension: 0.1,
+            },
+            {
+              label: "Avg",
+              data: [
+                "{{coretask_result[4][0][2]}}",
+                "{{coretask_result[4][1][2]}}",
+                "{{coretask_result[4][2][2]}}",
+                "{{coretask_result[4][3][2]}}",
+                "{{coretask_result[4][4][2]}}",
+              ],
+              fill: false,
+              borderColor: "green",
+              backgroundColor: "green",
+              tension: 0.1,
+            },
+            {
+              label: "Standard",
+              data: [
+                "{{coretask_result[4][0][3]}}",
+                "{{coretask_result[4][1][3]}}",
+                "{{coretask_result[4][2][3]}}",
+                "{{coretask_result[4][3][3]}}",
+                "{{coretask_result[4][4][3]}}",
+              ],
+              fill: false,
+              borderColor: "orange",
+              backgroundColor: "orange",
+              tension: 0.1,
+            },
+            {
+              label: "Median",
+              data: [
+                "{{coretask_result[4][0][4]}}",
+                "{{coretask_result[4][1][4]}}",
+                "{{coretask_result[4][2][4]}}",
+                "{{coretask_result[4][3][4]}}",
+                "{{coretask_result[4][4][4]}}",
+              ],
+              fill: false,
+              borderColor: "purple",
+              backgroundColor: "purple",
+              tension: 0.1,
+            },
+          ],
+        };
+
+        // 그래프의 객체
+        var myChart = new Chart($("#chart"));
+
+        function drawChart(data, type) {
+          myChart.destroy(); // 이전 그래프 제거
+          myChart = new Chart($("#chart"), {
+            type: type,
+            data: data,
+            options: {
+              responsive: false,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                },
+              },
+              plugins: {
+                tooltip: {
+                  enabled: true, // 항상 툴팁 표시
+                  mode: "index",
+                  intersect: false,
+                  callbacks: {
+                    label: function (context) {
+                      return context.parsed.y;
+                    },
+                  },
+                },
+              },
+            },
+          });
+        }
+
+        // task 1~5
+        function setTaskButtonClickHandlers(taskId, chartData) {
+          $("#task" + taskId).click(function () {
+            drawChart(chartData, "line");
+            for (var i = 1; i <= 5; i++) {
+              var buttonId = "task" + i;
+              if (i === taskId) {
+                showButton(buttonId + "_bar");
+                showButton(buttonId + "_radar");
+              } else {
+                hideButton(buttonId + "_bar");
+                hideButton(buttonId + "_radar");
+              }
+            }
+            for (var i = 1; i <= 5; i++) {
+              hideButton("core" + i + "_bar");
+              hideButton("core" + i + "_radar");
+            }
+          });
+
+          $("#task" + taskId + "_bar").click(function () {
+            drawChart(chartData, "bar");
+          });
+
+          $("#task" + taskId + "_radar").click(function () {
+            drawChart(chartData, "radar");
+          });
+        }
+
+        setTaskButtonClickHandlers(1, chartData1);
+        setTaskButtonClickHandlers(2, chartData2);
+        setTaskButtonClickHandlers(3, chartData3);
+        setTaskButtonClickHandlers(4, chartData4);
+        setTaskButtonClickHandlers(5, chartData5);
+
+        // core 1~5
+        function setCoreButtonClickHandlers(coreId, chartData) {
+          $("#core" + coreId).click(function () {
+            drawChart(chartData, "line");
+            for (var i = 1; i <= 5; i++) {
+              var buttonId = "core" + i;
+              if (i === coreId) {
+                showButton(buttonId + "_bar");
+                showButton(buttonId + "_radar");
+              } else {
+                hideButton(buttonId + "_bar");
+                hideButton(buttonId + "_radar");
+              }
+            }
+            for (var i = 1; i <= 5; i++) {
+              hideButton("task" + i + "_bar");
+              hideButton("task" + i + "_radar");
+            }
+          });
+
+          $("#core" + coreId + "_bar").click(function () {
+            drawChart(chartData, "bar");
+          });
+
+          $("#core" + coreId + "_radar").click(function () {
+            drawChart(chartData, "radar");
+          });
+        }
+
+        setCoreButtonClickHandlers(1, chartData6);
+        setCoreButtonClickHandlers(2, chartData7);
+        setCoreButtonClickHandlers(3, chartData8);
+        setCoreButtonClickHandlers(4, chartData9);
+        setCoreButtonClickHandlers(5, chartData10);
+      });
+    </script>
+  </body>
+</html>
